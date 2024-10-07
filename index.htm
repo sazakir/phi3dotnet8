@@ -13,7 +13,7 @@
     <footer>
         <div class="input-container">
             <input type="text" id="prompt" autocomplete="off" autofocus
-                placeholder="I'm your AI assistant. Type your query here..."></textarea>
+                placeholder="Type your query here and press the enter key..."></textarea>
         </div>
     </footer>
 
@@ -28,7 +28,7 @@
                 return el;
             }
 
-            function message(type, text) {
+            function showMessage(type, text) {
                 const el = $div(`speech-bubble-${type} color-${type}`);
                 el.innerText = text;
                 const wrapper = $div(`speech speech-${type}`);
@@ -42,41 +42,67 @@
 
             const isTouchDevice = () => 'ontouchstart' in window;
 
-            // On a device with touch support (read: mobile), do not autofocus
-            // since it'll annoyingly trigger the on-screen keyboard
+            // On a device with touch support (read: mobile), do not autofocus since it'll trigger the on-screen keyboard
             function focusInput() {
                 if (!isTouchDevice()) {
                     $('prompt').focus();
                 }
             }
 
-            function ask(question) {
-                message('human', question);
+            var requestProgressId;
+            var requestInProgress = false;
+            var progressText = ". ";
+            var startTime;
+            var endTime;
+
+            function showProgress() {
+                if (!requestInProgress)
+                    return;
+
+                progressText = progressText + ". ";
+                $('prompt').placeholder = 'Please wait ' + progressText;
+                if (progressText.length > 20)
+                    progressText = ". ";
+            }
+
+            function resetUI() {
+                endTime = (new Date()).getTime();
+                var sec = ((endTime - startTime) / 1000) % 60;
+                console.log('[' + new Date().toLocaleTimeString() + ']: Request completed in ' + sec + ' s');
+                requestInProgress = false;
+                clearInterval(requestProgressId);
+
+                $('prompt').disabled = false;
+                $('prompt').placeholder = 'Type your query here and press the enter key!';
+            }
+
+            function sendRequest(question) {
+                showMessage('human', question);
                 $('prompt').blur();
                 $('prompt').disabled = true;
-                $('prompt').placeholder = 'processing... please wait...';
 
-                var url = '/chat?q=' + encodeURIComponent(question);
-                //message('assistant', question);
+                startTime = (new Date()).getTime();
+                console.log('[' + new Date().toLocaleTimeString() + ']: Request sent...');
+                requestInProgress = true;
+                requestProgressId = setInterval(() => showProgress(), 1000);
+
+                var url = '/chat?userQuery=' + encodeURIComponent(question);
                 fetch(url)
                     .then(response => {
                         if (response.status !== 200)
-                            throw new Error('Unable to get the response! Please try again or check the logs for details!')
+                            throw new Error('Unable to get a response now. Please try again or check the logs for detail!')
                         return response.text();
                     })
                     .then(response => {
                         var resp = JSON.parse(response);
                         var content = resp.message.content;
-                        message('assistant', content);
-                        $('prompt').disabled = false;
-                        $('prompt').placeholder = 'type your query here...';
+                        showMessage('assistant', content);
                         focusInput();
+                        resetUI();
                     }).catch(error => {
-                        $('prompt').disabled = false;
-                        $('prompt').placeholder = 'type your query here...';
-                        message('panic', error);
+                        showMessage('panic', error);
+                        resetUI();
                     });
-
             }
 
             $('prompt').addEventListener('keydown', function handleKeyInput(event) {
@@ -84,15 +110,15 @@
                     const el = $('prompt');
                     const question = el.value.trim();
                     if (question.length > 0) {
-                        ask(question);
+                        sendRequest(question);
                         el.value = '';
                     }
                 }
             });
 
             setTimeout(() => {
-                message('assistant', 'Hi, how can I help you today?');
-            }, 0);
+                showMessage('assistant', 'Hi, I am your Phi3 Assistant. How can I help you today?');
+            }, 1);
         });
 
     </script>
@@ -120,7 +146,7 @@
             color-scheme: dark;
             max-width: 970px;
             border-width: 2px;
-            border-color: rgb(70, 169, 234);
+            border-color: rgb(100, 101, 102);
             padding-left: 1rem;
             padding-right: 1rem;
         }
@@ -164,7 +190,7 @@
             font-size: 1rem;
             line-height: 1.2rem;
             border-width: 1px;
-            border-color: rgb(222 214 145);
+            border-color: rgb(228, 248, 12);
             background-color: rgb(29, 35, 42);
             border-radius: .35rem;
         }
