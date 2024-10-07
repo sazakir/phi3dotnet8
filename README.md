@@ -1,10 +1,10 @@
-# phi3dotnet8
+# Phi3 with .NET 8
 Simple chat application with phi3 model using ollama and .net8
 
 
 This is a simple chatbot creating in .Net 8 using minimal api and a html page.
 
-Pre-requisites
+## Pre-requisites
 1. Ollama
 2. Phi3:Mini
 
