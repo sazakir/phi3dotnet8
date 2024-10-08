@@ -14,13 +14,32 @@ This is a simple chatbot created with a backend in [.Net 8 Minimal API](https://
 
 _The html code file has been taken from this [repo: Pico Jarvis](https://github.com/ariya/pico-jarvis)_
 
-***
+
 
 ## Code
 
+Check out the code from the git repo: (https://github.com/sazakir/phi3dotnet8.git) to your local folder.
+
+With VS Code, open the folder containing the .csproj file.
+
+Use the `dotnet run` command or run a debugging session using the debug options in VS Code.
+
+The application is launched in the default browser.
+
+Type a query and wait for a response from the Phi3:Mini model.  You can see time taken for responses using the console in the developer tools of the browser.
 
 
+### Screen shots
 
+**Phi3 Chatbot with .NET 8**  
+
+<img src="https://github.com/user-attachments/assets/7954a8c5-8b38-4d86-959c-e942ad14722d" width="600" height="700" alt="Phi3 Chatbot with .NET 8">  
+
+***
+
+**Developer Tools Console**  
+
+<img src="https://github.com/user-attachments/assets/7e69f92f-ae32-4cd4-ba54-c69550d5f1c3" width="400" height="300" alt="Developer Tools Console">
 
 ***
 
